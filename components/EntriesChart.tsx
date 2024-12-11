@@ -77,7 +77,7 @@ export function EntriesChart({ data, title, type }: EntriesChartProps) {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Legend />
+                {/* <Legend /> */}
                 <Bar dataKey="entries" fill="var(--color-entries)" />
               </BarChart>
             </ResponsiveContainer>
