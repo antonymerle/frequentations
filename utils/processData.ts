@@ -66,7 +66,7 @@ export function processCSV(csvContent: string): Statistics {
   data.forEach((row, i) => {
     if (
       !row.Date ||
-      row.Date.length !== 10 ||
+      row.Date.length !== 16 || // "25/12/2024 12:00" => 16 characters
       !row.Jour ||
       !row.Entrees //||
       // isNaN(Date.parse(row.Date)) ||
@@ -105,6 +105,17 @@ export function processCSV(csvContent: string): Statistics {
         saturdayEntriesByMonth: {},
         eveningEntriesByMonth: {},
       };
+    }
+
+    // Ensure each month is initialized
+    if (!statistics[year].entriesByMonth[month]) {
+      statistics[year].entriesByMonth[month] = 0;
+    }
+    if (!statistics[year].saturdayEntriesByMonth[month]) {
+      statistics[year].saturdayEntriesByMonth[month] = 0;
+    }
+    if (!statistics[year].eveningEntriesByMonth[month]) {
+      statistics[year].eveningEntriesByMonth[month] = 0;
     }
 
     // Total entries by month
