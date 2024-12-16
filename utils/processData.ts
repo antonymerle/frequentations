@@ -58,7 +58,15 @@ function parseDateTime(dateTimeString: string): Date | null {
 }
 
 export function processCSV(csvContent: string): Statistics {
-  const { data } = Papa.parse<AttendanceData>(csvContent, { header: true });
+  const cleanedContent = csvContent.replace(/^sep=.*\r?\n/, ""); // Papa Parse is having trouble parsing the CSV due to the sep=, line. This line is a special instruction for some spreadsheet software but isn't part of the actual CSV data.
+
+  const { data } = Papa.parse<AttendanceData>(cleanedContent, {
+    header: true,
+    skipEmptyLines: true, // Skip completely empty lines
+    // Add these options to handle quotes and potential formatting issues
+    quoteChar: '"',
+    delimiter: ",",
+  });
 
   const statistics: Statistics = {};
   let errorCount = 0;
@@ -66,9 +74,9 @@ export function processCSV(csvContent: string): Statistics {
   data.forEach((row, i) => {
     if (
       !row.Date ||
-      row.Date.length !== 16 || // "25/12/2024 12:00" => 16 characters
-      !row.Jour ||
-      !row.Entrees //||
+      typeof row.Date !== "string" ||
+      row.Date.length < 16 ||
+      !row.Entrees
       // isNaN(Date.parse(row.Date)) ||
       //  isNaN(parseInt(row.Entrees, 10))
     ) {
