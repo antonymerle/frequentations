@@ -43,7 +43,7 @@ export default function Home() {
         </a>
       </p>
       <ul className="pl-4 text-gray-700">
-        <li>Aller dans Statistiques/Historique</li>
+        <li className="py-4">Aller dans Statistiques/Historique</li>
         <li className="flex space-x-4">
           <p>Vérifiez que la granularité temporelle est sur demi-heure</p>
           <Image
@@ -54,7 +54,7 @@ export default function Home() {
             className="max-w-40"
           />
         </li>
-        <li className="flex space-x-4">
+        <li className="py-4 flex space-x-4">
           <p>
             Dans "Fréquentation" vérifier que le type de données cochées soient
             uniquement "Entrées" et "Sorties"
@@ -67,7 +67,7 @@ export default function Home() {
             className="max-w-40"
           />
         </li>
-        <li className="flex space-x-4">
+        <li className="py-4 flex space-x-4">
           <p>
             Choisir la période voulue (il est possible de sélectionner plusieurs
             années)
@@ -77,6 +77,16 @@ export default function Home() {
             src="periode.jpg"
             width={524}
             height={138}
+            className="max-w-40"
+          />
+        </li>
+        <li className="py-4 flex space-x-4">
+          <p>Cliquer sur "Télécharger les statistiques au format .csv"</p>
+          <Image
+            alt="download csv"
+            src="download.jpg"
+            width={748}
+            height={332}
             className="max-w-40"
           />
         </li>
