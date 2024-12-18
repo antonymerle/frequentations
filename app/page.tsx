@@ -26,8 +26,12 @@ export default function Home() {
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-3xl font-semibold mb-6 text-gray-800">
-        Tableau de bord des fréquentations générées par affluences
+        Tableau de bord des fréquentations des BU de l'UPPA
       </h1>
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+        Cette application permet de visualiser les données de fréquentation
+        générées par Affluences.
+      </h2>
       <p className="mb-4 text-gray-600">
         Mode d'emploi pour obtenir la visualisation de données depuis le{" "}
         <a
