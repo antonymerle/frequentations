@@ -18,7 +18,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error processing CSV:", error);
       alert(
-        "An error occurred while processing the CSV file. Please check the file format and try again."
+        "Une erreur s'est produite lors du traitement du fichier CSV. Veuillez vérifier le format du fichier et réessayer."
       );
     }
   };
