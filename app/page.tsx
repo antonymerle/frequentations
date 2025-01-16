@@ -1,15 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { FileUpload } from "../components/FileUpload";
 import { Dashboard } from "../components/Dashboard";
 import { processCSV } from "../utils/processData";
+import { DataSourceSelector } from "@/components/DataSourceSelector";
+import { DataSource } from "@/lib/types";
 
 export default function Home() {
   const [statistics, setStatistics] = useState<ReturnType<
     typeof processCSV
   > | null>(null);
+  const [dataSource, setDataSource] = useState<DataSource>("bayonne");
+
+  const handleDataSourceSelect = async (
+    source: "upload" | "bayonne" | "pau"
+  ) => {
+    setDataSource(source);
+    if (source !== "upload") {
+      try {
+        const response = await fetch(`/api/getData?dataset=${source}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const csvContent = await response.text();
+        const processedData = processCSV(csvContent);
+        setStatistics(processedData);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        alert("An error occurred while loading the data. Please try again.");
+      }
+    }
+  };
 
   const handleFileUpload = (content: string) => {
     try {
@@ -32,68 +54,18 @@ export default function Home() {
         Cette application permet de visualiser les données de fréquentation
         générées par Affluences.
       </h2>
-      <p className="mb-4 text-gray-600">
-        Mode d'emploi pour obtenir la visualisation de données depuis le{" "}
-        <a
-          className="text-blue-600 hover:underline"
-          href="https://admin.affluences.com/"
-          target="_blank"
-        >
-          portail d'administration d'Affluences
-        </a>
-      </p>
-      <ul className="pl-4 text-gray-700">
-        <li className="py-4">Aller dans Statistiques/Historique</li>
-        <li className="flex space-x-4">
-          <p>Vérifiez que la granularité temporelle est sur demi-heure</p>
-          <Image
-            alt="granularité temporelle"
-            src="temporel.jpg"
-            width={568}
-            height={98}
-            className="max-w-40"
-          />
-        </li>
-        <li className="py-4 flex space-x-4">
-          <p>
-            Dans "Fréquentation" vérifier que le type de données cochées soient
-            uniquement "Entrées" et "Sorties"
-          </p>
-          <Image
-            alt="type de données"
-            src="donnees.jpg"
-            width={490}
-            height={228}
-            className="max-w-40"
-          />
-        </li>
-        <li className="py-4 flex space-x-4">
-          <p>
-            Choisir la période voulue (il est possible de sélectionner plusieurs
-            années)
-          </p>
-          <Image
-            alt="période"
-            src="periode.jpg"
-            width={524}
-            height={138}
-            className="max-w-40"
-          />
-        </li>
-        <li className="py-4 flex space-x-4">
-          <p>Cliquer sur "Télécharger les statistiques au format .csv"</p>
-          <Image
-            alt="download csv"
-            src="download.jpg"
-            width={748}
-            height={332}
-            className="max-w-40"
-          />
-        </li>
-      </ul>
+
       <div className="py-12">
-        {!statistics && <FileUpload onFileUpload={handleFileUpload} />}
-        {statistics && <Dashboard statistics={statistics} />}
+        {/* {!statistics && <FileUpload onFileUpload={handleFileUpload} />} */}
+        {!statistics && (
+          <>
+            <DataSourceSelector onSelectSource={handleDataSourceSelect} />
+            {dataSource === "upload" && (
+              <FileUpload onFileUpload={handleFileUpload} />
+            )}
+          </>
+        )}
+        {statistics && <Dashboard statistics={statistics} site={dataSource} />}
       </div>
     </main>
   );
