@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DataSource } from "@/lib/types";
 
 interface YearlyStatistics {
   entriesByMonth: { [key: string]: number };
@@ -19,9 +20,10 @@ interface DashboardProps {
   statistics: {
     [year: number]: YearlyStatistics;
   };
+  site: DataSource;
 }
 
-export function Dashboard({ statistics }: DashboardProps) {
+export function Dashboard({ statistics, site }: DashboardProps) {
   const years = Object.keys(statistics)
     .map(Number)
     .sort((a, b) => b - a);
@@ -40,10 +42,21 @@ export function Dashboard({ statistics }: DashboardProps) {
     yearlyStats.eveningEntriesByMonth
   ).reduce((a, b) => a + b, 0);
 
+  const getTitle = () => {
+    switch (site) {
+      case "bayonne":
+        return `BU Bayonne : statistiques pour ${selectedYear}`;
+      case "pau":
+        return `BU Pau : statistiques pour ${selectedYear}`;
+      default:
+        return `Statistiques pour ${selectedYear}`;
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Statistiques pour {selectedYear}</h2>
+        <h2 className="text-2xl font-bold">{getTitle()}</h2>
         <Select onValueChange={(value) => setSelectedYear(Number(value))}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sélectionner l'année" />
