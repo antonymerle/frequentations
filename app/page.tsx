@@ -45,6 +45,11 @@ export default function Home() {
     }
   };
 
+  const handleReset = () => {
+    setStatistics(null);
+    setDataSource(null);
+  };
+
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-3xl font-semibold mb-6 text-gray-800">
@@ -65,7 +70,13 @@ export default function Home() {
             )}
           </>
         )}
-        {statistics && <Dashboard statistics={statistics} site={dataSource} />}
+        {statistics && (
+          <Dashboard
+            statistics={statistics}
+            site={dataSource}
+            onReset={handleReset}
+          />
+        )}
       </div>
     </main>
   );
