@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { EntriesChart } from "./EntriesChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { DataSource } from "@/lib/types";
 
 interface YearlyStatistics {
@@ -21,12 +22,17 @@ interface DashboardProps {
     [year: number]: YearlyStatistics;
   };
   site: DataSource;
+  onReset: () => void;
 }
 
-export function Dashboard({ statistics, site }: DashboardProps) {
-  const years = Object.keys(statistics)
-    .map(Number)
-    .sort((a, b) => b - a);
+export function Dashboard({ statistics, site, onReset }: DashboardProps) {
+  const years = useMemo(
+    () =>
+      Object.keys(statistics)
+        .map(Number)
+        .sort((a, b) => b - a),
+    [statistics]
+  );
   const [selectedYear, setSelectedYear] = useState<number>(years[0]);
 
   const yearlyStats = statistics[selectedYear];
@@ -59,7 +65,7 @@ export function Dashboard({ statistics, site }: DashboardProps) {
         <h2 className="text-2xl font-bold">{getTitle()}</h2>
         <Select onValueChange={(value) => setSelectedYear(Number(value))}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sélectionner l'année" />
+            <SelectValue placeholder="Changer l'année" />
           </SelectTrigger>
           <SelectContent>
             {years.map((year) => (
@@ -69,6 +75,9 @@ export function Dashboard({ statistics, site }: DashboardProps) {
             ))}
           </SelectContent>
         </Select>
+        <Button onClick={onReset} variant="outline">
+          Réinitialiser
+        </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
