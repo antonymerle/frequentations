@@ -11,6 +11,8 @@ interface YearlyStatistics {
   entriesByMonth: { [key: string]: number };
   saturdayEntriesByMonth: { [key: string]: number };
   eveningEntriesByMonth: { [key: string]: number };
+  saturdayMorningEntriesByMonth: { [key: string]: number }
+  saturdayAfternoonEntriesByMonth: { [key: string]: number }
 }
 
 interface Statistics {
@@ -112,6 +114,8 @@ export function processCSV(csvContent: string): Statistics {
         entriesByMonth: {},
         saturdayEntriesByMonth: {},
         eveningEntriesByMonth: {},
+        saturdayMorningEntriesByMonth: {},
+        saturdayAfternoonEntriesByMonth: {},
       };
     }
 
@@ -125,6 +129,12 @@ export function processCSV(csvContent: string): Statistics {
     if (!statistics[year].eveningEntriesByMonth[month]) {
       statistics[year].eveningEntriesByMonth[month] = 0;
     }
+    if (!statistics[year].saturdayMorningEntriesByMonth[month]) {
+      statistics[year].saturdayMorningEntriesByMonth[month] = 0
+    }
+    if (!statistics[year].saturdayAfternoonEntriesByMonth[month]) {
+      statistics[year].saturdayAfternoonEntriesByMonth[month] = 0
+    } 
 
     // Total entries by month
     statistics[year].entriesByMonth[month] =
@@ -134,6 +144,13 @@ export function processCSV(csvContent: string): Statistics {
     if (row.Jour && row.Jour.toLowerCase() === "samedi") {
       statistics[year].saturdayEntriesByMonth[month] =
         (statistics[year].saturdayEntriesByMonth[month] || 0) + entries;
+
+          // Saturday morning (9:30 - 13:00) vs afternoon (13:00 - 16:30)
+      if (hour >= 9 && (hour < 13 || (hour === 13))) {
+        statistics[year].saturdayMorningEntriesByMonth[month || 0] += entries
+      } else if (hour >= 13 && hour < 17) {
+        statistics[year].saturdayAfternoonEntriesByMonth[month || 0] += entries
+      }
     }
 
     // Evening entries by month (18:00 - 22:00)

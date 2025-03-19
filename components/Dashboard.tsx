@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { EntriesChart } from "./EntriesChart";
+import { SaturdayComparisonChart } from "./SaturdayComparisonChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -15,6 +16,8 @@ interface YearlyStatistics {
   entriesByMonth: { [key: string]: number };
   saturdayEntriesByMonth: { [key: string]: number };
   eveningEntriesByMonth: { [key: string]: number };
+  saturdayMorningEntriesByMonth: { [key: string]: number };
+  saturdayAfternoonEntriesByMonth: { [key: string]: number };
 }
 
 interface DashboardProps {
@@ -131,6 +134,11 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
         data={yearlyStats.eveningEntriesByMonth}
         title="Entrées en Soirée par Mois (18:00 - 22:00)"
         type="evening"
+      />
+
+      <SaturdayComparisonChart
+        morningData={yearlyStats.saturdayMorningEntriesByMonth}
+        afternoonData={yearlyStats.saturdayAfternoonEntriesByMonth}
       />
     </div>
   );
