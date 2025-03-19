@@ -11,13 +11,13 @@ interface YearlyStatistics {
   entriesByMonth: { [key: string]: number };
   saturdayEntriesByMonth: { [key: string]: number };
   eveningEntriesByMonth: { [key: string]: number };
-  saturdayMorningEntriesByMonth: { [key: string]: number }
-  saturdayAfternoonEntriesByMonth: { [key: string]: number }
+  saturdayMorningEntriesByMonth: { [key: string]: number };
+  saturdayAfternoonEntriesByMonth: { [key: string]: number };
   eveningTimeSlots: {
     [date: string]: {
-      [timeSlot: string]: number
-    }
-  }
+      [timeSlot: string]: number;
+    };
+  };
 }
 
 interface Statistics {
@@ -40,7 +40,16 @@ const frenchMonths = [
 ];
 
 // Time slots for evening hours (18:00 to 22:00)
-const eveningTimeSlots = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30"];
+const eveningTimeSlots = [
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+  "21:00",
+  "21:30",
+];
 
 function parseDateTime(dateTimeString: string): Date | null {
   try {
@@ -81,15 +90,16 @@ export function processCSV(csvContent: string): Statistics {
   const statistics: Statistics = {};
   let errorCount = 0;
 
-    // First pass: collect all data and identify days with attendance after 20:00
-    const daysWithLateAttendance = new Set<string>()
+  // First pass: collect all data and identify days with attendance after 20:00
+  const daysWithLateAttendance = new Set<string>();
 
   data.forEach((row, i) => {
     if (
       !row.Date ||
       typeof row.Date !== "string" ||
       row.Date.length < 16 ||
-      !row.Entrees
+      !row.Entrees ||
+      !row.Sorties
     ) {
       console.warn("Invalid row:", row, i);
       errorCount++;
@@ -103,7 +113,6 @@ export function processCSV(csvContent: string): Statistics {
       return;
     }
 
-
     // const year = date.getFullYear();
 
     // const month = frenchMonths[date.getMonth()];
@@ -111,31 +120,33 @@ export function processCSV(csvContent: string): Statistics {
     // const entries = parseInt(row.Entrees);
     // const hour = date.getHours();
 
-     // Check if this is after 20:00 and has entries
+    // Check if this is after 20:00 and has entries
     //  if (hour >= 20 && entries > 0) {
     //   const dateKey = date.toISOString().split("T")[0] // YYYY-MM-DD format
     //   daysWithLateAttendance.add(dateKey)
     // }
 
+    //  // Second pass: process all data
+    //  data.forEach((row, i) => {
+    //   if (!row.Date || typeof row.Date !== "string" || row.Date.length < 16 || !row.Entrees) {
+    //     return // Already logged in first pass
+    //   }
 
-  //  // Second pass: process all data
-  //  data.forEach((row, i) => {
-  //   if (!row.Date || typeof row.Date !== "string" || row.Date.length < 16 || !row.Entrees) {
-  //     return // Already logged in first pass
-  //   }
+    //   const date = parseDateTime(row.Date)
+    //   if (!date) {
+    //     return // Already logged in first pass
+    //   }
 
-  //   const date = parseDateTime(row.Date)
-  //   if (!date) {
-  //     return // Already logged in first pass
-  //   }
-
-    const year = date.getFullYear()
-    const month = frenchMonths[date.getMonth()]
-    const entries = Number.parseInt(row.Entrees)
-    const hour = date.getHours()
-    const minute = date.getMinutes()
-    const dateKey = date.toISOString().split("T")[0] // YYYY-MM-DD format
-    const timeSlot = `${hour.toString().padStart(2, "0")}:${minute >= 30 ? "30" : "00"}`
+    const year = date.getFullYear();
+    const month = frenchMonths[date.getMonth()];
+    const entries = Number.parseInt(row.Entrees);
+    const exits = Number.parseInt(row.Sorties);
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const dateKey = date.toISOString().split("T")[0]; // YYYY-MM-DD format
+    const timeSlot = `${hour.toString().padStart(2, "0")}:${
+      minute >= 30 ? "30" : "00"
+    }`;
 
     if (!statistics[year]) {
       statistics[year] = {
@@ -159,11 +170,11 @@ export function processCSV(csvContent: string): Statistics {
       statistics[year].eveningEntriesByMonth[month] = 0;
     }
     if (!statistics[year].saturdayMorningEntriesByMonth[month]) {
-      statistics[year].saturdayMorningEntriesByMonth[month] = 0
+      statistics[year].saturdayMorningEntriesByMonth[month] = 0;
     }
     if (!statistics[year].saturdayAfternoonEntriesByMonth[month]) {
-      statistics[year].saturdayAfternoonEntriesByMonth[month] = 0
-    } 
+      statistics[year].saturdayAfternoonEntriesByMonth[month] = 0;
+    }
 
     // Total entries by month
     statistics[year].entriesByMonth[month] =
@@ -174,11 +185,11 @@ export function processCSV(csvContent: string): Statistics {
       statistics[year].saturdayEntriesByMonth[month] =
         (statistics[year].saturdayEntriesByMonth[month] || 0) + entries;
 
-          // Saturday morning (9:30 - 13:00) vs afternoon (13:00 - 16:30)
-      if (hour >= 9 && (hour < 13 || (hour === 13))) {
-        statistics[year].saturdayMorningEntriesByMonth[month || 0] += entries
+      // Saturday morning (9:30 - 13:00) vs afternoon (13:00 - 16:30)
+      if (hour >= 9 && (hour < 13 || hour === 13)) {
+        statistics[year].saturdayMorningEntriesByMonth[month || 0] += entries;
       } else if (hour >= 13 && hour < 17) {
-        statistics[year].saturdayAfternoonEntriesByMonth[month || 0] += entries
+        statistics[year].saturdayAfternoonEntriesByMonth[month || 0] += entries;
       }
     }
 
@@ -187,25 +198,19 @@ export function processCSV(csvContent: string): Statistics {
       statistics[year].eveningEntriesByMonth[month] =
         (statistics[year].eveningEntriesByMonth[month] || 0) + entries;
 
-      //   // Track evening time slots for days with attendance after 20:00
-      // if (daysWithLateAttendance.has(dateKey)) {
-
-       // Track evening time slots for all days
-       if (hour >= 18 && hour <= 22 && eveningTimeSlots.includes(timeSlot)) {
+      // Track evening time slots for all days - using EXITS instead of entries
+      if (hour >= 18 && hour <= 22 && eveningTimeSlots.includes(timeSlot)) {
         if (!statistics[year].eveningTimeSlots[dateKey]) {
-          // statistics[year].eveningTimeSlots[dateKey] = {
-          //   hasAttendanceAfter20: false,
-          // }
-          statistics[year].eveningTimeSlots[dateKey] = {}
-
+          statistics[year].eveningTimeSlots[dateKey] = {};
 
           // Initialize all time slots for this day
           eveningTimeSlots.forEach((slot) => {
-            statistics[year].eveningTimeSlots[dateKey][slot] = 0
-          })
+            statistics[year].eveningTimeSlots[dateKey][slot] = 0;
+          });
         }
 
-          statistics[year].eveningTimeSlots[dateKey][timeSlot] += entries
+        // Add EXITS to the appropriate time slot
+        statistics[year].eveningTimeSlots[dateKey][timeSlot] += exits;
       }
     }
   });
