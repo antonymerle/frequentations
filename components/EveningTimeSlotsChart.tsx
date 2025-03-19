@@ -60,10 +60,12 @@ export function EveningTimeSlotsChart({
 
   // Set default date range (start: earliest date, end: latest date)
   const [startDate, setStartDate] = useState<Date | undefined>(
-    allDates.length > 0 ? new Date(allDates[0]) : undefined
+    // allDates.length > 0 ? new Date(allDates[0]) : undefined
+    new Date("2024-12-02")
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
-    allDates.length > 0 ? new Date(allDates[allDates.length - 1]) : undefined
+    // allDates.length > 0 ? new Date(allDates[allDates.length - 1]) : undefined
+    new Date("2024-12-20")
   );
 
   // Calculate mean exits for each time slot within the selected date range
@@ -117,12 +119,14 @@ export function EveningTimeSlotsChart({
   const totalMeanExits = useMemo(() => {
     return chartData.reduce((sum, item) => sum + item.meanExits, 0);
   }, [chartData]);
+  const BUOcardTitle =
+    "BUO+ ou extensions, répartition des sorties par tranche horaire (18:00 - 22:00)";
 
   if (allDates.length === 0) {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Moyenne des Sorties en Soirée (18:00 - 21:00)</CardTitle>
+          <CardTitle>{BUOcardTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           <p>Aucune donnée disponible pour cette période.</p>
@@ -134,7 +138,7 @@ export function EveningTimeSlotsChart({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Moyenne des Sorties en Soirée (18:00 - 21:00)</CardTitle>
+        <CardTitle>{BUOcardTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col md:flex-row gap-4 mb-6">
