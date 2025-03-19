@@ -130,18 +130,18 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
         title="Entrées le Samedi par Mois"
         type="saturday"
       />
-      <EntriesChart
-        data={yearlyStats.eveningEntriesByMonth}
-        title="Entrées en Soirée par Mois (18:00 - 22:00)"
-        type="evening"
-      />
-      // l'analyse des données de l'après midi ne concerne que Pau
+      {/* l'analyse des données de l'après midi ne concerne que Pau */}
       {site === "pau" && (
         <SaturdayComparisonChart
           morningData={yearlyStats.saturdayMorningEntriesByMonth}
           afternoonData={yearlyStats.saturdayAfternoonEntriesByMonth}
         />
       )}
+      <EntriesChart
+        data={yearlyStats.eveningEntriesByMonth}
+        title="Entrées en Soirée par Mois (18:00 - 22:00)"
+        type="evening"
+      />
     </div>
   );
 }

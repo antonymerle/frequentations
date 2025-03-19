@@ -76,7 +76,7 @@ export function SaturdayComparisonChart({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Comparaison Samedi Matin vs Après-midi</CardTitle>
+        <CardTitle>Samedis : matin vs après-midi</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,18 +116,18 @@ export function SaturdayComparisonChart({
           <div className="space-y-4">
             <div className="bg-gray-100 p-4 rounded-lg">
               <h3 className="text-lg font-semibold mb-2">
-                Statistiques Globales
+                Répartition des entrées le samedi
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Total Matin</p>
+                  <p className="text-sm text-gray-500">Entrées matin</p>
                   <p className="text-xl font-bold">
                     {totalMorning.toLocaleString()}
                   </p>
                   <p className="text-sm">{morningRatio}% du total</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Total Après-midi</p>
+                  <p className="text-sm text-gray-500">Entrées après-midi</p>
                   <p className="text-xl font-bold">
                     {totalAfternoon.toLocaleString()}
                   </p>
