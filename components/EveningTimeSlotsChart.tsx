@@ -49,6 +49,10 @@ const timeSlots = [
   "21:30",
 ];
 
+// Time slots grouped by period
+const earlyEveningSlots = ["18:00", "18:30", "19:00", "19:30"];
+const lateEveningSlots = ["20:00", "20:30", "21:00", "21:30"];
+
 export function EveningTimeSlotsChart({
   eveningTimeSlots,
   site,
@@ -121,6 +125,30 @@ export function EveningTimeSlotsChart({
   }, [chartData]);
   const BUOcardTitle =
     "BUO+ ou extensions, répartition des sorties par tranche horaire (18:00 - 22:00)";
+
+  // Calculate mean exits for early evening (18:00-20:00)
+  const earlyEveningMeanExits = useMemo(() => {
+    const earlySlots = chartData.filter((item) =>
+      earlyEveningSlots.includes(item.timeSlot)
+    );
+    const totalEarlyExits = earlySlots.reduce(
+      (sum, item) => sum + item.meanExits,
+      0
+    );
+    return totalEarlyExits;
+  }, [chartData]);
+
+  // Calculate mean exits for late evening (20:00-22:00)
+  const lateEveningMeanExits = useMemo(() => {
+    const lateSlots = chartData.filter((item) =>
+      lateEveningSlots.includes(item.timeSlot)
+    );
+    const totalLateExits = lateSlots.reduce(
+      (sum, item) => sum + item.meanExits,
+      0
+    );
+    return totalLateExits;
+  }, [chartData]);
 
   if (allDates.length === 0) {
     return (
@@ -253,7 +281,37 @@ export function EveningTimeSlotsChart({
               <p className="text-xl font-bold">
                 {totalMeanExits.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-500 mt-2">Période</p>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <p className="text-sm text-gray-500">18:00 - 20:00</p>
+                  <p className="text-lg font-bold">
+                    {earlyEveningMeanExits.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {totalMeanExits > 0
+                      ? `${Math.round(
+                          (earlyEveningMeanExits / totalMeanExits) * 100
+                        )}% du total`
+                      : "0% du total"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">20:00 - 22:00</p>
+                  <p className="text-lg font-bold">
+                    {lateEveningMeanExits.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {totalMeanExits > 0
+                      ? `${Math.round(
+                          (lateEveningMeanExits / totalMeanExits) * 100
+                        )}% du total`
+                      : "0% du total"}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-500 mt-4">Période</p>
               <p className="text-sm">
                 {startDate && endDate ? (
                   <>
@@ -279,6 +337,43 @@ export function EveningTimeSlotsChart({
               </ul>
             </div>
           </div>
+          {/* <div className="space-y-4">
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-2">
+                Statistiques pour la période sélectionnée
+              </h3>
+              <p className="text-sm text-gray-500">
+                Moyenne totale des sorties en soirée (hors week-ends)
+              </p>
+              <p className="text-xl font-bold">
+                {totalMeanExits.toLocaleString()}
+              </p>
+              <p className="text-sm text-gray-500 mt-2">Période</p>
+              <p className="text-sm">
+                {startDate && endDate ? (
+                  <>
+                    Du {format(startDate, "PPP", { locale: fr })} au{" "}
+                    {format(endDate, "PPP", { locale: fr })}
+                  </>
+                ) : (
+                  "Période non sélectionnée"
+                )}
+              </p>
+            </div>
+
+            <div className="overflow-y-auto max-h-[200px] pr-4">
+              <h3 className="text-lg font-semibold mb-2">
+                Détails par Tranche Horaire
+              </h3>
+              <ul className="space-y-2">
+                {chartData.map(({ timeSlot, meanExits }) => (
+                  <li key={timeSlot} className="text-sm">
+                    <strong>{timeSlot}:</strong> {meanExits} sorties en moyenne
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div> */}
         </div>
       </CardContent>
     </Card>
