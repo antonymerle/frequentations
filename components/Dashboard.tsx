@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import { EntriesChart } from "./EntriesChart";
+import { EveningTimeSlotsChart } from "./EveningTimeSlotsChart";
 import { SaturdayComparisonChart } from "./SaturdayComparisonChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,6 +21,11 @@ interface YearlyStatistics {
   eveningEntriesByMonth: { [key: string]: number };
   saturdayMorningEntriesByMonth: { [key: string]: number };
   saturdayAfternoonEntriesByMonth: { [key: string]: number };
+  eveningTimeSlots: {
+    [date: string]: {
+      [timeSlot: string]: number;
+    };
+  };
 }
 
 interface DashboardProps {
@@ -141,6 +149,10 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
         data={yearlyStats.eveningEntriesByMonth}
         title="Entrées en Soirée par Mois (18:00 - 22:00)"
         type="evening"
+      />
+      <EveningTimeSlotsChart
+        eveningTimeSlots={yearlyStats.eveningTimeSlots}
+        site={site}
       />
     </div>
   );

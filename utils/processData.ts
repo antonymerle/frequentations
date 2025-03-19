@@ -13,6 +13,11 @@ interface YearlyStatistics {
   eveningEntriesByMonth: { [key: string]: number };
   saturdayMorningEntriesByMonth: { [key: string]: number }
   saturdayAfternoonEntriesByMonth: { [key: string]: number }
+  eveningTimeSlots: {
+    [date: string]: {
+      [timeSlot: string]: number
+    }
+  }
 }
 
 interface Statistics {
@@ -33,6 +38,9 @@ const frenchMonths = [
   "Novembre",
   "Décembre",
 ];
+
+// Time slots for evening hours (18:00 to 22:00)
+const eveningTimeSlots = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30"];
 
 function parseDateTime(dateTimeString: string): Date | null {
   try {
@@ -73,41 +81,61 @@ export function processCSV(csvContent: string): Statistics {
   const statistics: Statistics = {};
   let errorCount = 0;
 
+    // First pass: collect all data and identify days with attendance after 20:00
+    const daysWithLateAttendance = new Set<string>()
+
   data.forEach((row, i) => {
     if (
       !row.Date ||
       typeof row.Date !== "string" ||
       row.Date.length < 16 ||
       !row.Entrees
-      // isNaN(Date.parse(row.Date)) ||
-      //  isNaN(parseInt(row.Entrees, 10))
     ) {
       console.warn("Invalid row:", row, i);
       errorCount++;
       return;
     }
-    // console.log("raw Date", row.Date);
 
-    // convert date format to "YYYY-MM-DD"
-    // const formattedDate = row.Date.split("/").reverse().join("/");
-
-    // const timestamp = Date.parse(formattedDate);
-    // const date = new Date(formattedDate);
     const date = parseDateTime(row.Date);
     if (!date) {
       console.warn("Invalid date:", row.Date);
       errorCount++;
       return;
     }
-    // console.log({ date });
 
-    const year = date.getFullYear();
-    // console.log({ year });
 
-    const month = frenchMonths[date.getMonth()];
-    // console.log({ month });
-    const entries = parseInt(row.Entrees);
-    const hour = date.getHours();
+    // const year = date.getFullYear();
+
+    // const month = frenchMonths[date.getMonth()];
+
+    // const entries = parseInt(row.Entrees);
+    // const hour = date.getHours();
+
+     // Check if this is after 20:00 and has entries
+    //  if (hour >= 20 && entries > 0) {
+    //   const dateKey = date.toISOString().split("T")[0] // YYYY-MM-DD format
+    //   daysWithLateAttendance.add(dateKey)
+    // }
+
+
+  //  // Second pass: process all data
+  //  data.forEach((row, i) => {
+  //   if (!row.Date || typeof row.Date !== "string" || row.Date.length < 16 || !row.Entrees) {
+  //     return // Already logged in first pass
+  //   }
+
+  //   const date = parseDateTime(row.Date)
+  //   if (!date) {
+  //     return // Already logged in first pass
+  //   }
+
+    const year = date.getFullYear()
+    const month = frenchMonths[date.getMonth()]
+    const entries = Number.parseInt(row.Entrees)
+    const hour = date.getHours()
+    const minute = date.getMinutes()
+    const dateKey = date.toISOString().split("T")[0] // YYYY-MM-DD format
+    const timeSlot = `${hour.toString().padStart(2, "0")}:${minute >= 30 ? "30" : "00"}`
 
     if (!statistics[year]) {
       statistics[year] = {
@@ -116,6 +144,7 @@ export function processCSV(csvContent: string): Statistics {
         eveningEntriesByMonth: {},
         saturdayMorningEntriesByMonth: {},
         saturdayAfternoonEntriesByMonth: {},
+        eveningTimeSlots: {},
       };
     }
 
@@ -157,6 +186,27 @@ export function processCSV(csvContent: string): Statistics {
     if (hour >= 18 && hour < 22) {
       statistics[year].eveningEntriesByMonth[month] =
         (statistics[year].eveningEntriesByMonth[month] || 0) + entries;
+
+      //   // Track evening time slots for days with attendance after 20:00
+      // if (daysWithLateAttendance.has(dateKey)) {
+
+       // Track evening time slots for all days
+       if (hour >= 18 && hour <= 22 && eveningTimeSlots.includes(timeSlot)) {
+        if (!statistics[year].eveningTimeSlots[dateKey]) {
+          // statistics[year].eveningTimeSlots[dateKey] = {
+          //   hasAttendanceAfter20: false,
+          // }
+          statistics[year].eveningTimeSlots[dateKey] = {}
+
+
+          // Initialize all time slots for this day
+          eveningTimeSlots.forEach((slot) => {
+            statistics[year].eveningTimeSlots[dateKey][slot] = 0
+          })
+        }
+
+          statistics[year].eveningTimeSlots[dateKey][timeSlot] += entries
+      }
     }
   });
   console.log({ errorCount });
