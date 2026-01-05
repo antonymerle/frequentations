@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const periode = "2020-2024";
+const periode = '2020-2025';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -26,4 +26,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to read file' }, { status: 500 });
   }
 }
-

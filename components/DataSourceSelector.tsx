@@ -1,19 +1,15 @@
-import { useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { useState } from 'react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface DataSourceSelectorProps {
-  onSelectSource: (source: "upload" | "bayonne" | "pau") => void;
+  onSelectSource: (source: 'upload' | 'bayonne' | 'pau') => void;
 }
 
-export function DataSourceSelector({
-  onSelectSource,
-}: DataSourceSelectorProps) {
-  const [selectedSource, setSelectedSource] = useState<
-    "upload" | "bayonne" | "pau"
-  >("bayonne");
+export function DataSourceSelector({ onSelectSource }: DataSourceSelectorProps) {
+  const [selectedSource, setSelectedSource] = useState<'upload' | 'bayonne' | 'pau'>('bayonne');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,21 +21,15 @@ export function DataSourceSelector({
       <form onSubmit={handleSubmit} className="space-y-6">
         <RadioGroup
           value={selectedSource}
-          onValueChange={(value: "upload" | "bayonne" | "pau") =>
-            setSelectedSource(value)
-          }
+          onValueChange={(value: 'upload' | 'bayonne' | 'pau') => setSelectedSource(value)}
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="bayonne" id="bayonne" />
-            <Label htmlFor="bayonne">
-              Consulter les statistiques de Bayonne (2020-2024)
-            </Label>
+            <Label htmlFor="bayonne">Consulter les statistiques de Bayonne (2020-2025)</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="pau" id="pau" />
-            <Label htmlFor="pau">
-              Consulter les statistiques de Pau (2020-2024)
-            </Label>
+            <Label htmlFor="pau">Consulter les statistiques de Pau (2020-2025)</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="upload" id="upload" />
@@ -49,10 +39,10 @@ export function DataSourceSelector({
         <Button type="submit">Valider</Button>
       </form>
 
-      {selectedSource === "upload" && (
+      {selectedSource === 'upload' && (
         <div className="my-12">
           <p className="mb-4">
-            Mode d'emploi pour obtenir la visualisation de données depuis le{" "}
+            Mode d'emploi pour obtenir la visualisation de données depuis le{' '}
             <a
               className="text-blue-600 hover:underline"
               href="https://admin.affluences.com/"
@@ -75,8 +65,8 @@ export function DataSourceSelector({
             </li>
             <li className="py-4 flex space-x-4">
               <p>
-                Dans "Fréquentation" vérifier que le type de données cochées
-                soient uniquement "Entrées" et "Sorties"
+                Dans "Fréquentation" vérifier que le type de données cochées soient uniquement
+                "Entrées" et "Sorties"
               </p>
               <Image
                 alt="type de données"
@@ -87,10 +77,7 @@ export function DataSourceSelector({
               />
             </li>
             <li className="py-4 flex space-x-4">
-              <p>
-                Choisir la période voulue (il est possible de sélectionner
-                plusieurs années)
-              </p>
+              <p>Choisir la période voulue (il est possible de sélectionner plusieurs années)</p>
               <Image
                 alt="période"
                 src="periode.jpg"
