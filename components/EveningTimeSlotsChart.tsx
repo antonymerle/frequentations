@@ -1,33 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Bar,
-  BarChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { DataSource } from "@/lib/types";
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { DataSource } from '@/lib/types';
 
 interface EveningTimeSlotsChartProps {
   eveningTimeSlots: {
@@ -38,25 +22,13 @@ interface EveningTimeSlotsChartProps {
   site: DataSource;
 }
 
-const timeSlots = [
-  "18:00",
-  "18:30",
-  "19:00",
-  "19:30",
-  "20:00",
-  "20:30",
-  "21:00",
-  "21:30",
-];
+const timeSlots = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'];
 
 // Time slots grouped by period
-const earlyEveningSlots = ["18:00", "18:30", "19:00", "19:30"];
-const lateEveningSlots = ["20:00", "20:30", "21:00", "21:30"];
+const earlyEveningSlots = ['18:00', '18:30', '19:00', '19:30'];
+const lateEveningSlots = ['20:00', '20:30', '21:00', '21:30'];
 
-export function EveningTimeSlotsChart({
-  eveningTimeSlots,
-  site,
-}: EveningTimeSlotsChartProps) {
+export function EveningTimeSlotsChart({ eveningTimeSlots, site }: EveningTimeSlotsChartProps) {
   // Get all available dates
   const allDates = useMemo(() => {
     return Object.keys(eveningTimeSlots).sort();
@@ -65,19 +37,19 @@ export function EveningTimeSlotsChart({
   // Set default date range (start: earliest date, end: latest date)
   const [startDate, setStartDate] = useState<Date | undefined>(
     // allDates.length > 0 ? new Date(allDates[0]) : undefined
-    new Date("2024-12-02")
+    new Date('2025-12-01')
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
     // allDates.length > 0 ? new Date(allDates[allDates.length - 1]) : undefined
-    new Date("2024-12-20")
+    new Date('2025-12-19')
   );
 
   // Calculate mean exits for each time slot within the selected date range
   const chartData = useMemo(() => {
     if (!startDate || !endDate || allDates.length === 0) return [];
 
-    const startDateStr = startDate.toISOString().split("T")[0];
-    const endDateStr = endDate.toISOString().split("T")[0];
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
 
     // Initialize counters for each time slot
     const slotSums: { [slot: string]: number } = {};
@@ -98,7 +70,7 @@ export function EveningTimeSlotsChart({
         dateStr <= endDateStr &&
         date.getDay() !== 0 && // Sunday
         date.getDay() !== 6 && // Saturday
-        (site == "bayonne" ? date.getDay() !== 4 && date.getDay() !== 5 : true)
+        (site == 'bayonne' ? date.getDay() !== 4 && date.getDay() !== 5 : true)
       ) {
         timeSlots.forEach((slot) => {
           if (data[slot] !== undefined) {
@@ -112,10 +84,7 @@ export function EveningTimeSlotsChart({
     // Calculate means
     return timeSlots.map((slot) => ({
       timeSlot: slot,
-      meanExits:
-        slotCounts[slot] > 0
-          ? Math.round(slotSums[slot] / slotCounts[slot])
-          : 0,
+      meanExits: slotCounts[slot] > 0 ? Math.round(slotSums[slot] / slotCounts[slot]) : 0,
     }));
   }, [startDate, endDate, eveningTimeSlots, allDates]);
 
@@ -124,29 +93,19 @@ export function EveningTimeSlotsChart({
     return chartData.reduce((sum, item) => sum + item.meanExits, 0);
   }, [chartData]);
   const BUOcardTitle =
-    "BUO+ ou extensions, répartition des sorties par tranche horaire (18:00 - 22:00)";
+    'BUO+ ou extensions, répartition des sorties par tranche horaire (18:00 - 22:00)';
 
   // Calculate mean exits for early evening (18:00-20:00)
   const earlyEveningMeanExits = useMemo(() => {
-    const earlySlots = chartData.filter((item) =>
-      earlyEveningSlots.includes(item.timeSlot)
-    );
-    const totalEarlyExits = earlySlots.reduce(
-      (sum, item) => sum + item.meanExits,
-      0
-    );
+    const earlySlots = chartData.filter((item) => earlyEveningSlots.includes(item.timeSlot));
+    const totalEarlyExits = earlySlots.reduce((sum, item) => sum + item.meanExits, 0);
     return totalEarlyExits;
   }, [chartData]);
 
   // Calculate mean exits for late evening (20:00-22:00)
   const lateEveningMeanExits = useMemo(() => {
-    const lateSlots = chartData.filter((item) =>
-      lateEveningSlots.includes(item.timeSlot)
-    );
-    const totalLateExits = lateSlots.reduce(
-      (sum, item) => sum + item.meanExits,
-      0
-    );
+    const lateSlots = chartData.filter((item) => lateEveningSlots.includes(item.timeSlot));
+    const totalLateExits = lateSlots.reduce((sum, item) => sum + item.meanExits, 0);
     return totalLateExits;
   }, [chartData]);
 
@@ -175,15 +134,15 @@ export function EveningTimeSlotsChart({
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant={"outline"}
+                  variant={'outline'}
                   className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !startDate && "text-muted-foreground"
+                    'w-full justify-start text-left font-normal',
+                    !startDate && 'text-muted-foreground'
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {startDate ? (
-                    format(startDate, "PPP", { locale: fr })
+                    format(startDate, 'PPP', { locale: fr })
                   ) : (
                     <span>Sélectionner une date</span>
                   )}
@@ -199,7 +158,7 @@ export function EveningTimeSlotsChart({
                     // Disable dates after end date or dates not in the dataset
                     return (
                       (endDate ? date > endDate : false) ||
-                      !allDates.includes(date.toISOString().split("T")[0])
+                      !allDates.includes(date.toISOString().split('T')[0])
                     );
                   }}
                 />
@@ -211,15 +170,15 @@ export function EveningTimeSlotsChart({
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant={"outline"}
+                  variant={'outline'}
                   className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !endDate && "text-muted-foreground"
+                    'w-full justify-start text-left font-normal',
+                    !endDate && 'text-muted-foreground'
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {endDate ? (
-                    format(endDate, "PPP", { locale: fr })
+                    format(endDate, 'PPP', { locale: fr })
                   ) : (
                     <span>Sélectionner une date</span>
                   )}
@@ -235,7 +194,7 @@ export function EveningTimeSlotsChart({
                     // Disable dates before start date or dates not in the dataset
                     return (
                       (startDate ? date < startDate : false) ||
-                      !allDates.includes(date.toISOString().split("T")[0])
+                      !allDates.includes(date.toISOString().split('T')[0])
                     );
                   }}
                 />
@@ -248,8 +207,8 @@ export function EveningTimeSlotsChart({
           <ChartContainer
             config={{
               meanExits: {
-                label: "Moyenne des Sorties",
-                color: "hsl(var(--chart-1))",
+                label: 'Moyenne des Sorties',
+                color: 'hsl(var(--chart-1))',
               },
             }}
             className="h-[300px]"
@@ -261,11 +220,7 @@ export function EveningTimeSlotsChart({
                 <YAxis />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Legend />
-                <Bar
-                  dataKey="meanExits"
-                  fill="var(--color-meanExits)"
-                  name="Moyenne des Sorties"
-                />
+                <Bar dataKey="meanExits" fill="var(--color-meanExits)" name="Moyenne des Sorties" />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
@@ -278,35 +233,25 @@ export function EveningTimeSlotsChart({
               <p className="text-sm text-gray-500">
                 Moyenne totale des sorties en soirée (hors week-ends)
               </p>
-              <p className="text-xl font-bold">
-                {totalMeanExits.toLocaleString()}
-              </p>
+              <p className="text-xl font-bold">{totalMeanExits.toLocaleString()}</p>
 
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <p className="text-sm text-gray-500">18:00 - 20:00</p>
-                  <p className="text-lg font-bold">
-                    {earlyEveningMeanExits.toLocaleString()}
-                  </p>
+                  <p className="text-lg font-bold">{earlyEveningMeanExits.toLocaleString()}</p>
                   <p className="text-xs text-gray-500">
                     {totalMeanExits > 0
-                      ? `${Math.round(
-                          (earlyEveningMeanExits / totalMeanExits) * 100
-                        )}% du total`
-                      : "0% du total"}
+                      ? `${Math.round((earlyEveningMeanExits / totalMeanExits) * 100)}% du total`
+                      : '0% du total'}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">20:00 - 22:00</p>
-                  <p className="text-lg font-bold">
-                    {lateEveningMeanExits.toLocaleString()}
-                  </p>
+                  <p className="text-lg font-bold">{lateEveningMeanExits.toLocaleString()}</p>
                   <p className="text-xs text-gray-500">
                     {totalMeanExits > 0
-                      ? `${Math.round(
-                          (lateEveningMeanExits / totalMeanExits) * 100
-                        )}% du total`
-                      : "0% du total"}
+                      ? `${Math.round((lateEveningMeanExits / totalMeanExits) * 100)}% du total`
+                      : '0% du total'}
                   </p>
                 </div>
               </div>
@@ -315,19 +260,17 @@ export function EveningTimeSlotsChart({
               <p className="text-sm">
                 {startDate && endDate ? (
                   <>
-                    Du {format(startDate, "PPP", { locale: fr })} au{" "}
-                    {format(endDate, "PPP", { locale: fr })}
+                    Du {format(startDate, 'PPP', { locale: fr })} au{' '}
+                    {format(endDate, 'PPP', { locale: fr })}
                   </>
                 ) : (
-                  "Période non sélectionnée"
+                  'Période non sélectionnée'
                 )}
               </p>
             </div>
 
             <div className="overflow-y-auto max-h-[200px] pr-4">
-              <h3 className="text-lg font-semibold mb-2">
-                Détails par Tranche Horaire
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Détails par Tranche Horaire</h3>
               <ul className="space-y-2">
                 {chartData.map(({ timeSlot, meanExits }) => (
                   <li key={timeSlot} className="text-sm">
