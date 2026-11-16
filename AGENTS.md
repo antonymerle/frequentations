@@ -10,27 +10,27 @@ Affluences (admin.affluences.com).
 
 ## Stack
 
-| Catégorie | Technologie |
-|-----------|-------------|
-| Framework | Next.js 14.2.16 |
-| Langage | TypeScript 5 (strict) |
-| UI | React 18 |
-| Styles | Tailwind CSS 3 + variables CSS + dark mode via next-themes |
-| Composants | shadcn/ui (Radix UI primitives, lucide icons) |
-| Graphiques | Recharts |
-| Parsing CSV | PapaParse |
-| Dates | date-fns (locale fr) |
-| Formulaires | React Hook Form + Zod |
-| Drag & Drop | react-dropzone |
+| Catégorie   | Technologie                                                |
+| ----------- | ---------------------------------------------------------- |
+| Framework   | Next.js 14.2.16                                            |
+| Langage     | TypeScript 5 (strict)                                      |
+| UI          | React 18                                                   |
+| Styles      | Tailwind CSS 3 + variables CSS + dark mode via next-themes |
+| Composants  | shadcn/ui (Radix UI primitives, lucide icons)              |
+| Graphiques  | Recharts                                                   |
+| Parsing CSV | PapaParse                                                  |
+| Dates       | date-fns (locale fr)                                       |
+| Formulaires | React Hook Form + Zod                                      |
+| Drag & Drop | react-dropzone                                             |
 
 ## Commandes
 
-| Commande | Description |
-|----------|-------------|
-| `npm run dev` | Dev server sur localhost:3000 |
-| `npm run build` | Build production |
-| `npm run start` | Serveur production |
-| `npm run lint` | ESLint |
+| Commande        | Description                   |
+| --------------- | ----------------------------- |
+| `npm run dev`   | Dev server sur localhost:3000 |
+| `npm run build` | Build production              |
+| `npm run start` | Serveur production            |
+| `npm run lint`  | ESLint                        |
 
 ## Architecture
 
@@ -59,28 +59,28 @@ lib/
 
 ## Data
 
-| Aspect | Détail |
-|--------|--------|
-| Source | Plateforme Affluences (admin.affluences.com) |
-| Fichiers CSV | `public/bayonne-2020-2025.csv`, `public/pau-2020-2025.csv` |
-| Colonnes | `"Date","Jour","Entrees","Sorties"` (séparateur : virgule) |
-| Format date | `DD/MM/YYYY HH:MM` (ex: `"01/01/2020 00:00"`) |
-| Intervalles | 30 minutes (00:00 à 23:30) |
-| Période | 2020 à 2025 |
-| Lignes par fichier | ~105 217 |
-| Taille | ~3,5 Mo |
-| Jours actifs | Lundi à vendredi + certains samedis (dimanches : zéro) |
-| Bibliothèque fermée | Lignes avec `0,0` ignorées |
+| Aspect              | Détail                                                     |
+| ------------------- | ---------------------------------------------------------- |
+| Source              | Plateforme Affluences (admin.affluences.com)               |
+| Fichiers CSV        | `public/bayonne-2020-2025.csv`, `public/pau-2020-2025.csv` |
+| Colonnes            | `"Date","Jour","Entrees","Sorties"` (séparateur : virgule) |
+| Format date         | `DD/MM/YYYY HH:MM` (ex: `"01/01/2020 00:00"`)              |
+| Intervalles         | 30 minutes (00:00 à 23:30)                                 |
+| Période             | 2020 à 2025                                                |
+| Lignes par fichier  | ~105 217                                                   |
+| Taille              | ~3,5 Mo                                                    |
+| Jours actifs        | Lundi à vendredi + certains samedis (dimanches : zéro)     |
+| Bibliothèque fermée | Lignes avec `0,0` ignorées                                 |
 
 ### Statistiques calculées
 
-| Metric | Règle |
-|--------|-------|
-| Entrées totales par mois | Somme de toutes les entrées |
-| Entrées le samedi par mois | Filtrage sur jour = "samedi" |
-| Entrées en soirée par mois | Plage 18:00 à 22:00 |
-| Samedi matin vs après-midi | Matin 9:30–13:00 vs Après-midi 13:00–16:30 |
-| Nombre de samedis ouverts | Jours avec >5 entrées |
+| Metric                                | Règle                                                             |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| Entrées totales par mois              | Somme de toutes les entrées                                       |
+| Entrées le samedi par mois            | Filtrage sur jour = "samedi"                                      |
+| Entrées en soirée par mois            | Plage 18:00 à 22:00                                               |
+| Samedi matin vs après-midi            | Matin 9:30–13:00 vs Après-midi 13:00–16:30                        |
+| Nombre de samedis ouverts             | Jours avec >5 entrées                                             |
 | Moyenne des sorties par plage horaire | 18:00–21:30, hors week-ends (vendredi+samedi exclus pour Bayonne) |
 
 ## Conventions
@@ -108,4 +108,4 @@ lib/
 - Dimanches : systématiquement zéro
 - Seuil samedi ouvert : >5 entrées
 - Plage soirée : 18:00 à 22:00 inclus
-- Bayonne exclut vendredis et samedis du calcul de moyenne en soirée ; Pau inclut tous les jours ouvrés
+- Bayonne exclut jeudis, vendredis et samedis du calcul de moyenne en soirée ; Pau inclut tous les jours ouvrés du lundi au vendredi.
