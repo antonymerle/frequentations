@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import { EntriesChart } from './EntriesChart';
 import { EveningTimeSlotsChart } from './EveningTimeSlotsChart';
 import { SaturdayComparisonChart } from './SaturdayComparisonChart';
+import { SaturdayOccupancyChart } from './SaturdayOccupancyChart';
+import { WeekdayEveningOccupancyChart } from './WeekdayEveningOccupancyChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -23,6 +25,11 @@ interface YearlyStatistics {
   saturdayAfternoonEntriesByMonth: { [key: string]: number };
   openedSaturdaysCount: number;
   eveningTimeSlots: {
+    [date: string]: {
+      [timeSlot: string]: number;
+    };
+  };
+  occupancyByHour: {
     [date: string]: {
       [timeSlot: string]: number;
     };
@@ -149,6 +156,16 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
         type="evening"
       />
       <EveningTimeSlotsChart eveningTimeSlots={yearlyStats.eveningTimeSlots} site={site} />
+      <SaturdayOccupancyChart
+        occupancyByHour={yearlyStats.occupancyByHour}
+        site={site}
+        capacity={site === 'bayonne' ? 196 : 840}
+      />
+      <WeekdayEveningOccupancyChart
+        occupancyByHour={yearlyStats.occupancyByHour}
+        site={site}
+        capacity={site === 'bayonne' ? 196 : 840}
+      />
     </div>
   );
 }

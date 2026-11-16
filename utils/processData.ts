@@ -19,6 +19,11 @@ interface YearlyStatistics {
       [timeSlot: string]: number;
     };
   };
+  occupancyByHour: {
+    [date: string]: {
+      [timeSlot: string]: number;
+    };
+  };
 }
 
 interface Statistics {
@@ -76,11 +81,11 @@ export function processCSV(csvContent: string): Statistics {
   const statistics: Statistics = {};
   let errorCount = 0;
 
-  // First pass: collect all data and identify days with attendance after 20:00
-  const daysWithLateAttendance = new Set<string>();
-
   // Track opened Saturdays by year
   const openedSaturdaysByYear: { [year: number]: Set<string> } = {};
+
+  // Track cumulative entries/exits per day for occupancy calculation
+  const dayCumulative: { [dateKey: string]: { entries: number; exits: number } } = {};
 
   data.forEach((row, i) => {
     if (
@@ -135,6 +140,13 @@ export function processCSV(csvContent: string): Statistics {
     const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
     const timeSlot = `${hour.toString().padStart(2, '0')}:${minute >= 30 ? '30' : '00'}`;
 
+    // Cumulative tracking for occupancy
+    if (!dayCumulative[dateKey]) {
+      dayCumulative[dateKey] = { entries: 0, exits: 0 };
+    }
+    dayCumulative[dateKey].entries += entries;
+    dayCumulative[dateKey].exits += exits;
+
     if (!statistics[year]) {
       statistics[year] = {
         entriesByMonth: {},
@@ -144,6 +156,7 @@ export function processCSV(csvContent: string): Statistics {
         saturdayAfternoonEntriesByMonth: {},
         openedSaturdaysCount: 0,
         eveningTimeSlots: {},
+        occupancyByHour: {},
       };
     }
 
@@ -212,6 +225,13 @@ export function processCSV(csvContent: string): Statistics {
         statistics[year].eveningTimeSlots[dateKey][timeSlot] += exits;
       }
     }
+
+    // Track occupancy by hour (cumulative entries - exits)
+    if (!statistics[year].occupancyByHour[dateKey]) {
+      statistics[year].occupancyByHour[dateKey] = {};
+    }
+    statistics[year].occupancyByHour[dateKey][timeSlot] =
+      dayCumulative[dateKey].entries - dayCumulative[dateKey].exits;
   });
 
   // Count opened Saturdays for each year
