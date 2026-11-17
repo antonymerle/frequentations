@@ -13,21 +13,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { OccupancyChart } from './OccupancyChart';
+import { YearlyStatistics } from '@/utils/processData';
 import { DataSource } from '@/lib/types';
-
-interface YearlyStatistics {
-  entriesByMonth: { [key: string]: number };
-  saturdayEntriesByMonth: { [key: string]: number };
-  eveningEntriesByMonth: { [key: string]: number };
-  saturdayMorningEntriesByMonth: { [key: string]: number };
-  saturdayAfternoonEntriesByMonth: { [key: string]: number };
-  openedSaturdaysCount: number;
-  eveningTimeSlots: {
-    [date: string]: {
-      [timeSlot: string]: number;
-    };
-  };
-}
 
 interface DashboardProps {
   statistics: {
@@ -126,6 +114,8 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
           </CardContent>
         </Card>
       </div>
+      <OccupancyChart year={selectedYear} days={yearlyStats.attendanceDays} site={site} mode="evening" />
+      <OccupancyChart year={selectedYear} days={yearlyStats.attendanceDays} site={site} mode="saturday" />
       <EntriesChart
         data={yearlyStats.entriesByMonth}
         title="Entrées Totales par Mois"

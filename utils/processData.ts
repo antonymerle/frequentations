@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { AttendanceDay } from './occupancy';
 
 interface AttendanceData {
   Date: string;
@@ -7,7 +8,8 @@ interface AttendanceData {
   Sorties: string;
 }
 
-interface YearlyStatistics {
+export interface YearlyStatistics {
+  attendanceDays: Record<string, AttendanceDay>;
   entriesByMonth: { [key: string]: number };
   saturdayEntriesByMonth: { [key: string]: number };
   eveningEntriesByMonth: { [key: string]: number };
@@ -132,11 +134,12 @@ export function processCSV(csvContent: string): Statistics {
     const exits = Number.parseInt(row.Sorties);
     const hour = date.getHours();
     const minute = date.getMinutes();
-    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const dateKey = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; // YYYY-MM-DD format
     const timeSlot = `${hour.toString().padStart(2, '0')}:${minute >= 30 ? '30' : '00'}`;
 
     if (!statistics[year]) {
       statistics[year] = {
+        attendanceDays: {},
         entriesByMonth: {},
         saturdayEntriesByMonth: {},
         eveningEntriesByMonth: {},
@@ -146,6 +149,12 @@ export function processCSV(csvContent: string): Statistics {
         eveningTimeSlots: {},
       };
     }
+
+    if (!Number.isFinite(entries) || !Number.isFinite(exits) || entries < 0 || exits < 0) return;
+    if (!statistics[year].attendanceDays[dateKey]) {
+      statistics[year].attendanceDays[dateKey] = { weekday: date.getDay(), slots: [] };
+    }
+    statistics[year].attendanceDays[dateKey].slots.push({ minute: hour * 60 + minute, entries, exits });
 
     // Ensure each month is initialized
     if (!statistics[year].entriesByMonth[month]) {
@@ -185,9 +194,9 @@ export function processCSV(csvContent: string): Statistics {
       }
 
       // Saturday morning (9:30 - 13:00) vs afternoon (13:00 - 16:30)
-      if (hour >= 9 && (hour < 13 || hour === 13)) {
+      if (hour * 60 + minute >= 570 && hour * 60 + minute < 780) {
         statistics[year].saturdayMorningEntriesByMonth[month || 0] += entries;
-      } else if (hour >= 13 && hour < 17) {
+      } else if (hour * 60 + minute >= 780 && hour * 60 + minute < 990) {
         statistics[year].saturdayAfternoonEntriesByMonth[month || 0] += entries;
       }
     }
