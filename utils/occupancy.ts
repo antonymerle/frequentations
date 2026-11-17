@@ -32,7 +32,7 @@ export function calculateOccupancy(
 ): OccupancyPoint[] {
   const capacity = site === 'bayonne' ? 196 : 840;
   const periods = mode === 'evening'
-    ? [{ start: 1080, end: 1320, name: 'Soirée' }]
+    ? [{ start: 1080, end: site === 'bayonne' ? 1170 : 1200, name: 'Soirée' }]
     : site === 'bayonne'
       ? [{ start: 540, end: 780, name: 'Matin' }]
       : [{ start: 570, end: 780, name: 'Matin' }, { start: 780, end: 990, name: 'Après-midi' }];

@@ -24,12 +24,21 @@ assert.equal(calculateOccupancy({ small: day(6, { 570: [5, 0] }) }, 'pau', 'satu
 const missing = day(1, {1080: [10, 0]});
 missing.slots = missing.slots.filter(slot => slot.minute !== 1110);
 assert.equal(calculateOccupancy({ missing }, 'pau', 'evening')[1].rate, null);
-assert.equal(baseline.length, 8);
+assert.equal(baseline.length, 3);
 assert.equal(pau.length, 14);
 assert.equal(baseline[0].label, '18:00–18:30');
-assert.ok(Math.abs(annualOccupancy(baseline) - 81.25 / 196 * 100) < 1e-10);
+assert.ok(Math.abs(annualOccupancy(baseline) - (250 / 3) / 196 * 100) < 1e-10);
 assert.equal(annualOccupancy([]), null);
 assert.equal(annualOccupancy([{ rate: 1, days: 1 }, { rate: 4, days: 2 }, { rate: null, days: 0 }]), 3);
 const low = calculateOccupancy({ low: day(1, {1080: [1, 0]}) }, 'pau', 'evening');
 assert.ok(low[0].rate > 0 && low[0].rate < 1);
+
+assert.equal(baseline.at(-1).label, '19:00–19:30');
+const pauEvening = calculateOccupancy({ open }, 'pau', 'evening');
+assert.equal(pauEvening.length, 4);
+assert.equal(pauEvening.at(-1).label, '19:30–20:00');
+for (const [site, closing] of [['bayonne', 1170], ['pau', 1200]]) {
+  const afterClosing = day(1, { [closing]: [20, 0] });
+  assert.ok(calculateOccupancy({ afterClosing }, site, 'evening').every(point => point.rate === null));
+}
 console.log('Occupancy checks passed');

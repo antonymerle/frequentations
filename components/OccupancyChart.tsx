@@ -33,7 +33,7 @@ export function OccupancyChart({ days, site, mode, year }: OccupancyChartProps) 
         <CardTitle>Occupation moyenne estimée — {mode === 'evening' ? 'soirées' : 'samedis'} · {year}</CardTitle>
         {library && <p className="text-sm text-muted-foreground">
           BU {library === 'bayonne' ? 'Bayonne · 196' : 'Pau · 840'} places · {mode === 'evening'
-            ? `18:00–22:00 · ${library === 'bayonne' ? 'lundi à mercredi' : 'lundi à vendredi'}`
+            ? `18:00–${library === 'bayonne' ? '19:30' : '20:00'} · ${library === 'bayonne' ? 'lundi à mercredi' : 'lundi à vendredi'}`
             : library === 'bayonne' ? '09:00–13:00' : 'Matin : 09:30–13:00 · Après-midi : 13:00–16:30'}
         </p>}
       </CardHeader>

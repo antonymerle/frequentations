@@ -114,8 +114,7 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
           </CardContent>
         </Card>
       </div>
-      <OccupancyChart year={selectedYear} days={yearlyStats.attendanceDays} site={site} mode="evening" />
-      <OccupancyChart year={selectedYear} days={yearlyStats.attendanceDays} site={site} mode="saturday" />
+
       <EntriesChart
         data={yearlyStats.entriesByMonth}
         title="Entrées Totales par Mois"
@@ -139,6 +138,18 @@ export function Dashboard({ statistics, site, onReset }: DashboardProps) {
         type="evening"
       />
       <EveningTimeSlotsChart eveningTimeSlots={yearlyStats.eveningTimeSlots} site={site} />
+      <OccupancyChart
+        year={selectedYear}
+        days={yearlyStats.attendanceDays}
+        site={site}
+        mode="evening"
+      />
+      <OccupancyChart
+        year={selectedYear}
+        days={yearlyStats.attendanceDays}
+        site={site}
+        mode="saturday"
+      />
     </div>
   );
 }
