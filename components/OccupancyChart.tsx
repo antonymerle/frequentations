@@ -87,13 +87,17 @@ export function OccupancyChart({ days, site, mode, year }: OccupancyChartProps) 
           </div>
         </> : <p>Aucune plage ouverte exploitable pour cette année.</p>)}
         <p className="text-sm text-muted-foreground">
-          Présence estimée par cumul des entrées moins les sorties depuis le début de chaque journée, puis moyenne par demi-heure rapportée à la capacité.
-          Seules les plages avec des entrées ou sorties sont retenues ; les samedis doivent dépasser 5 entrées sur les horaires d’ouverture.
-          À Pau, le matin et l’après-midi sont sélectionnés séparément. Les demi-heures sans mouvement d’une plage retenue restent incluses ; les observations manquantes sont exclues.
+          Présence estimée à partir du cumul quotidien des entrées et sorties, rapportée au nombre de places.
+          {mode === 'evening'
+            ? ' Seules les soirées avec des entrées ou sorties sur la plage analysée sont retenues.'
+            : ' Seuls les samedis totalisant plus de 5 entrées pendant les horaires d’ouverture sont retenus.'}
+          {mode === 'saturday' && library === 'pau' && ' Le matin et l’après-midi sont inclus séparément, selon leur fréquentation.'}
+          {mode === 'saturday' && library === 'bayonne' && ' Seule la matinée est analysée.'}
         </p>
         <p className="text-sm text-muted-foreground">
-          Taux calculés sans arrondi par palier ni minimum imposé ; affichage à deux décimales. La moyenne annuelle utilise toutes les demi-heures disponibles des plages ouvertes de l’année, pondérées par leur nombre de jours observés. Une absence de données ne vaut pas zéro.
-          Le survol indique le taux calculé et le nombre de jours. Les compteurs de passage donnent une estimation de présence, pas une mesure des places assises occupées.
+          Moyenne annuelle pondérée par le nombre de demi-heures observées : créneaux sans mouvement inclus, données manquantes exclues.
+          Taux sans palier, affichés à deux décimales. Le survol précise le nombre de jours retenus.
+          Il s’agit d’une estimation de présence, pas d’un comptage des places assises occupées.
         </p>
       </CardContent>
     </Card>
